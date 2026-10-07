@@ -1,0 +1,49 @@
+# Maintainer: TR-RBM <47713618+TR-RBM@users.noreply.github.com>
+#
+# Arch Linux, Artix and other pacman distributions:
+#   makepkg -si
+# The release workflow builds this file and attaches the package.
+
+pkgname=codecleanup
+pkgver=0.1.1
+pkgrel=1
+pkgdesc="Replaces source code comments with refids, moves the text into a docs folder, and restores it"
+arch=('x86_64' 'aarch64')
+url="https://github.com/TR-RBM/codecleaner"
+license=('Unlicense')
+depends=('gcc-libs' 'glibc')
+makedepends=('cargo')
+# The crate sets up LTO itself; makepkg's flags on top break the link.
+options=('!lto' '!debug')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+# The archive of a tag cannot carry its own checksum.
+sha256sums=('SKIP')
+
+prepare() {
+    cd "codecleaner-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    cd "codecleaner-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo build --frozen --release
+}
+
+check() {
+    cd "codecleaner-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo test --frozen --release
+}
+
+package() {
+    cd "codecleaner-$pkgver"
+    install -Dm755 target/release/codecleanup "$pkgdir/usr/bin/codecleanup"
+    install -Dm644 completions/codecleanup.bash "$pkgdir/usr/share/bash-completion/completions/codecleanup"
+    install -Dm644 completions/codecleanup.fish "$pkgdir/usr/share/fish/vendor_completions.d/codecleanup.fish"
+    install -Dm644 README.md "$pkgdir/usr/share/doc/codecleanup/README.md"
+    install -Dm644 UNLICENSE "$pkgdir/usr/share/licenses/codecleanup/UNLICENSE"
+}

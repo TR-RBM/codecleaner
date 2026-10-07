@@ -23,6 +23,32 @@ fn main() {
 
 and `docs/main.md` receives both comments under their refid.
 
+## Install
+
+Download the file for your system from the
+[latest release](https://github.com/TR-RBM/codecleaner/releases/latest).
+
+| System | File | Install |
+|--------|------|---------|
+| Debian, Ubuntu | `codecleanup_<version>-1_amd64.deb` | `sudo apt install ./codecleanup_*.deb` |
+| Red Hat, Rocky, Fedora | `codecleanup-<version>-1.x86_64.rpm` | `sudo dnf install ./codecleanup-*.rpm` |
+| Arch, Artix | `codecleanup-<version>-1-x86_64.pkg.tar.zst` | `sudo pacman -U codecleanup-*.pkg.tar.zst` |
+| Windows | `codecleanup-v<version>-x86_64-windows.msi` | double-click |
+| Any Linux | `codecleanup-v<version>-x86_64-linux.tar.gz` | unpack, copy `codecleanup` into your `PATH` |
+
+The `.deb`, `.rpm` and `.tar.gz` files exist for `aarch64`/`arm64` as
+well. They contain a static binary without dependencies, so they work on
+old and new releases alike. The Linux packages install the bash and fish
+completions too.
+
+On Arch-based systems the package can also be built from
+`packaging/arch/PKGBUILD` with `makepkg -si`.
+
+The Windows installer needs no administrator rights. It installs for the
+current user into `%LOCALAPPDATA%\Programs\codecleanup`, adds that folder
+to the user's `PATH` and lists the program under "Installed apps", where
+it can be removed again. Open a new terminal after installing.
+
 ## Usage
 
 ```sh
@@ -221,3 +247,20 @@ memory to clean, 1.0 s and 40 MB to restore.
 cargo build --release    # target/release/codecleanup
 cargo test
 ```
+
+## Releasing
+
+Set the new version in `Cargo.toml` and `packaging/arch/PKGBUILD`, commit,
+then push a tag:
+
+```sh
+git tag -a v1.2.3 -m "codecleanup 1.2.3" && git push origin v1.2.3
+```
+
+`.github/workflows/release.yml` builds, tests and attaches all files to a
+new release. Started by hand from the Actions tab it does the same without
+publishing anything.
+
+## License
+
+Public domain, see [UNLICENSE](UNLICENSE).

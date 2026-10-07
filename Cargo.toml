@@ -1,8 +1,13 @@
 [package]
 name = "codecleanup"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Code Cleanup: replaces source code comments with refids and moves the text into a docs folder"
+license = "Unlicense"
+authors = ["TR-RBM <47713618+TR-RBM@users.noreply.github.com>"]
+repository = "https://github.com/TR-RBM/codecleaner"
+homepage = "https://github.com/TR-RBM/codecleaner"
+readme = "README.md"
 exclude = ["plugins/"]
 
 [dependencies]
@@ -18,4 +23,33 @@ wasmi = { version = "2.0.0", default-features = false, features = ["stable", "st
 
 [profile.release]
 lto = true
+strip = true
 codegen-units = 1
+
+# Packaging. The Linux packages carry the static musl build, so they have
+# no dependencies and run on any distribution release.
+
+[package.metadata.deb]
+section = "devel"
+priority = "optional"
+depends = ""
+extended-description = """\
+Replaces every comment section in source files with a short refid and \
+moves the original text into a docs folder as Markdown. --restore puts \
+the comments back byte for byte."""
+license-file = ["UNLICENSE", "0"]
+assets = [
+    ["target/release/codecleanup", "usr/bin/", "755"],
+    ["README.md", "usr/share/doc/codecleanup/", "644"],
+    ["completions/codecleanup.bash", "usr/share/bash-completion/completions/codecleanup", "644"],
+    ["completions/codecleanup.fish", "usr/share/fish/vendor_completions.d/", "644"],
+]
+
+[package.metadata.generate-rpm]
+assets = [
+    { source = "target/release/codecleanup", dest = "/usr/bin/codecleanup", mode = "755" },
+    { source = "README.md", dest = "/usr/share/doc/codecleanup/README.md", mode = "644", doc = true },
+    { source = "UNLICENSE", dest = "/usr/share/licenses/codecleanup/UNLICENSE", mode = "644" },
+    { source = "completions/codecleanup.bash", dest = "/usr/share/bash-completion/completions/codecleanup", mode = "644" },
+    { source = "completions/codecleanup.fish", dest = "/usr/share/fish/vendor_completions.d/codecleanup.fish", mode = "644" },
+]

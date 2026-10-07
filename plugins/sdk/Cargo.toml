@@ -3,4 +3,5 @@ name = "codecleanup-plugin"
 version = "0.1.0"
 edition = "2021"
 description = "Glue for writing codecleanup language plugins in Rust"
+license = "Unlicense"
 publish = false

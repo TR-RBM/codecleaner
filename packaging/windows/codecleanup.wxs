@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Windows installer, built by the release workflow with WiX 5:
+
+    wix build packaging/windows/codecleanup.wxs -arch x64
+        -d Version=1.2.3 -d SourceDir=<folder with codecleanup.exe> -o codecleanup.msi
+
+  It installs for the current user only, so it needs no administrator
+  rights: files go to %LOCALAPPDATA%\Programs\codecleanup, which is added
+  to the user's PATH. The program is listed under "Installed apps" and can
+  be removed there, which also takes the PATH entry away again.
+
+  The UpgradeCode must never change; it is how a new version finds and
+  replaces an installed one.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Code Cleanup" Manufacturer="TR-RBM" Version="$(var.Version)"
+           UpgradeCode="8DCD4319-193F-486D-A2FF-855B9FCAB304" Scope="perUser" Compressed="yes">
+    <SummaryInformation Description="Replaces source code comments with refids" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Code Cleanup is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/TR-RBM/codecleaner" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="codecleanup" />
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="Code Cleanup">
+      <Component Id="Program" Directory="INSTALLFOLDER" Guid="A822C19B-B8AB-4DCC-A228-AE1154FB55C5">
+        <!-- A per-user component is tracked by a registry value, not a file. -->
+        <RegistryValue Root="HKCU" Key="Software\TR-RBM\codecleanup" Name="InstallDir"
+                       Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+        <File Id="Exe" Source="$(var.SourceDir)\codecleanup.exe" />
+        <File Id="Readme" Source="$(var.SourceDir)\README.md" />
+        <File Id="License" Source="$(var.SourceDir)\UNLICENSE" />
+        <Environment Id="UserPath" Name="PATH" Value="[INSTALLFOLDER]" Part="last"
+                     Action="set" System="no" Permanent="no" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveProgramsFolder" Directory="ProgramsFolder" On="uninstall" />
+      </Component>
+    </Feature>
+  </Package>
+</Wix>

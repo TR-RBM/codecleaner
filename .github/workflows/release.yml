@@ -1,0 +1,180 @@
+# Builds the release files when a version tag is pushed:
+#   git tag -a v1.2.3 -m "codecleanup 1.2.3" && git push origin v1.2.3
+#
+# The version in Cargo.toml and packaging/arch/PKGBUILD has to match the tag.
+#
+# Started by hand (Actions > release > Run workflow) it builds and tests
+# everything but publishes nothing; the files are kept as run artifacts.
+# The Arch package is only built for a tag, because its PKGBUILD downloads
+# the source of that tag.
+
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  linux:
+    name: linux ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    env:
+      TARGET: ${{ matrix.arch }}-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that the versions match the tag
+        if: github.ref_type == 'tag'
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          crate="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)"
+          arch="$(sed -n 's/^pkgver=//p' packaging/arch/PKGBUILD)"
+          echo "tag $tag, Cargo.toml $crate, PKGBUILD $arch"
+          test "$tag" = "$crate" && test "$tag" = "$arch"
+
+      - name: Install the Rust toolchain
+        run: |
+          rustup update stable
+          rustup default stable
+          rustup target add "$TARGET"
+
+      - name: Test
+        run: cargo test --locked
+
+      # Static, so the same binary runs on every distribution release.
+      - name: Build
+        run: cargo build --release --locked --target "$TARGET"
+
+      - name: Package
+        run: |
+          cargo install --locked cargo-deb cargo-generate-rpm
+          mkdir dist
+          cargo deb --no-build --target "$TARGET" --output dist/
+          cargo generate-rpm --target "$TARGET" --output dist/
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)"
+          name="codecleanup-v$version-${{ matrix.arch }}-linux"
+          mkdir "$name"
+          cp -r "target/$TARGET/release/codecleanup" README.md UNLICENSE completions "$name/"
+          tar czf "dist/$name.tar.gz" "$name"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+
+  arch:
+    name: arch package
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-24.04
+    container: archlinux:base-devel
+    steps:
+      - uses: actions/checkout@v4
+
+      # makepkg refuses to run as root.
+      - name: Build the package
+        run: |
+          pacman -Syu --noconfirm --needed rust
+          useradd --create-home builder
+          cp -r packaging/arch /home/builder/pkg
+          chown -R builder /home/builder/pkg
+          su builder -c "cd /home/builder/pkg && makepkg --noconfirm"
+          mkdir dist
+          cp /home/builder/pkg/*.pkg.tar.zst dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch
+          path: dist/*
+          if-no-files-found: error
+
+  windows:
+    name: windows x86_64
+    runs-on: windows-latest
+    env:
+      # No dependency on the Visual C++ runtime being installed.
+      RUSTFLAGS: -C target-feature=+crt-static
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          rustup update stable
+          rustup default stable
+          cargo test --locked
+          cargo build --release --locked
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.*)"' | Select-Object -First 1).Matches.Groups[1].Value
+          $name = "codecleanup-v$version-x86_64-windows"
+          New-Item -ItemType Directory -Path $name, dist | Out-Null
+          Copy-Item target/release/codecleanup.exe, README.md, UNLICENSE -Destination $name
+          Compress-Archive -Path $name -DestinationPath "dist/$name.zip"
+          # WiX 5 is the last version without the maintenance fee terms.
+          dotnet tool install --global wix --version 5.0.2
+          wix build packaging/windows/codecleanup.wxs -arch x64 -d "Version=$version" -d "SourceDir=$name" -o "dist/$name.msi"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          Remove-Item dist/*.wixpdb -ErrorAction SilentlyContinue
+
+      # Installs, runs and removes the program on a real Windows.
+      - name: Test the installer
+        shell: pwsh
+        run: |
+          $msi = (Get-Item dist/*.msi).FullName
+          $exe = "$env:LOCALAPPDATA\Programs\codecleanup\codecleanup.exe"
+          $install = Start-Process msiexec -ArgumentList "/i `"$msi`" /qn /l*v install.log" -Wait -PassThru
+          if ($install.ExitCode -ne 0) { Get-Content install.log -Tail 60; throw "install failed: $($install.ExitCode)" }
+          & $exe --version
+          if ($LASTEXITCODE -ne 0) { throw "the installed program does not run" }
+          $path = [Environment]::GetEnvironmentVariable('Path', 'User')
+          if ($path -notlike '*\Programs\codecleanup*') { throw "not on the user PATH: $path" }
+          $listed = Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object DisplayName -eq 'Code Cleanup'
+          if (-not $listed) { throw "not listed under installed apps" }
+          $remove = Start-Process msiexec -ArgumentList "/x `"$msi`" /qn" -Wait -PassThru
+          if ($remove.ExitCode -ne 0) { throw "uninstall failed: $($remove.ExitCode)" }
+          if (Test-Path $exe) { throw "the program is still there after the uninstall" }
+          $path = [Environment]::GetEnvironmentVariable('Path', 'User')
+          if ($path -like '*\Programs\codecleanup*') { throw "still on the user PATH: $path" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    name: publish release
+    if: github.ref_type == 'tag'
+    needs: [linux, arch, windows]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+          gh release create "$GITHUB_REF_NAME" --title "codecleanup ${GITHUB_REF_NAME#v}" --generate-notes --verify-tag ./*
