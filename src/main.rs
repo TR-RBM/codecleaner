@@ -170,17 +170,18 @@ fn run(cli: Cli) -> Result<ExitCode> {
     store.flush()?;
 
     println!(
-        "processed {} files, with {} refids",
-        counts.files, counts.refids
+        "processed {}, with {}",
+        count(counts.files, "file"),
+        count(counts.refids, "refid")
     );
     match mode {
-        Mode::Clean => println!("indexed {} refids", counts.indexed),
-        Mode::Restore => println!("restored {} refids", counts.restored),
+        Mode::Clean => println!("indexed {}", count(counts.indexed, "refid")),
+        Mode::Restore => println!("restored {}", count(counts.restored, "refid")),
     }
     if counts.missing > 0 {
         println!(
-            "left {} refids untouched, the docs have no text for them",
-            counts.missing
+            "left {} untouched, the docs have no text for them",
+            count(counts.missing, "refid")
         );
     }
     println!("run time: {}", human_time(started.elapsed()));
@@ -201,6 +202,12 @@ fn config_dir() -> Option<PathBuf> {
         .filter(|dir| !dir.is_empty())
         .map(PathBuf::from);
     xdg.or_else(|| Some(PathBuf::from(env::var_os("HOME")?).join(".config")))
+}
+
+/// A number with its noun, in singular or plural: `1 file`, `2 files`.
+fn count(number: u64, noun: &str) -> String {
+    let plural = if number == 1 { "" } else { "s" };
+    format!("{number} {noun}{plural}")
 }
 
 fn human_time(elapsed: Duration) -> String {
@@ -237,6 +244,13 @@ mod tests {
         assert_eq!(human_time(Duration::from_millis(2500)), "2.50 seconds");
         assert_eq!(human_time(Duration::from_secs(125)), "2 minutes 5 seconds");
         assert_eq!(human_time(Duration::from_secs(3720)), "1 hours 2 minutes");
+    }
+
+    #[test]
+    fn counts_in_singular_and_plural() {
+        assert_eq!(count(0, "file"), "0 files");
+        assert_eq!(count(1, "file"), "1 file");
+        assert_eq!(count(2, "refid"), "2 refids");
     }
 
     #[test]

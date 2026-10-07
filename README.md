@@ -1,5 +1,10 @@
 # Code Cleanup
 
+[![CI](https://github.com/TR-RBM/codecleaner/actions/workflows/ci.yml/badge.svg)](https://github.com/TR-RBM/codecleaner/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/TR-RBM/codecleaner)](https://github.com/TR-RBM/codecleaner/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/TR-RBM/codecleaner/total)](https://github.com/TR-RBM/codecleaner/releases)
+[![License](https://img.shields.io/badge/license-Unlicense-blue)](UNLICENSE)
+
 `codecleanup` replaces the comments in source files with short references
 ("refids") and moves the original text into a docs folder. `--restore`
 puts the comments back.
@@ -22,6 +27,8 @@ fn main() {
 ```
 
 and `docs/main.md` receives both comments under their refid.
+
+![Terminal session: codecleanup replaces the comments in main.rs with refids and restores them](assets/demo.svg)
 
 ## Install
 
@@ -260,6 +267,9 @@ git tag -a v1.2.3 -m "codecleanup 1.2.3" && git push origin v1.2.3
 `.github/workflows/release.yml` builds, tests and attaches all files to a
 new release. Started by hand from the Actions tab it does the same without
 publishing anything.
+
+The terminal demo above is generated from real output; after a change to
+what the tool prints, run `python3 assets/make-demo.py`.
 
 ## License
 

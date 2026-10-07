@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 680" width="720" height="680" role="img" aria-label="Terminal session: codecleanup replaces the comments in main.rs with refids and restores them">
+<style>
+text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 14px }
+@keyframes b0 { 0%, 4.20% { opacity: 0 } 4.21%, 100% { opacity: 1 } }
+.b0 { animation: b0 19.0s linear infinite }
+@keyframes b1 { 0%, 7.88% { opacity: 0 } 7.89%, 100% { opacity: 1 } }
+.b1 { animation: b1 19.0s linear infinite }
+@keyframes b2 { 0%, 15.78% { opacity: 0 } 15.79%, 100% { opacity: 1 } }
+.b2 { animation: b2 19.0s linear infinite }
+@keyframes b3 { 0%, 19.46% { opacity: 0 } 19.47%, 100% { opacity: 1 } }
+.b3 { animation: b3 19.0s linear infinite }
+@keyframes b4 { 0%, 27.36% { opacity: 0 } 27.37%, 100% { opacity: 1 } }
+.b4 { animation: b4 19.0s linear infinite }
+@keyframes b5 { 0%, 31.04% { opacity: 0 } 31.05%, 100% { opacity: 1 } }
+.b5 { animation: b5 19.0s linear infinite }
+@keyframes b6 { 0%, 38.94% { opacity: 0 } 38.95%, 100% { opacity: 1 } }
+.b6 { animation: b6 19.0s linear infinite }
+@keyframes b7 { 0%, 42.62% { opacity: 0 } 42.63%, 100% { opacity: 1 } }
+.b7 { animation: b7 19.0s linear infinite }
+@keyframes b8 { 0%, 50.52% { opacity: 0 } 50.53%, 100% { opacity: 1 } }
+.b8 { animation: b8 19.0s linear infinite }
+@keyframes b9 { 0%, 54.20% { opacity: 0 } 54.21%, 100% { opacity: 1 } }
+.b9 { animation: b9 19.0s linear infinite }
+@keyframes b10 { 0%, 62.10% { opacity: 0 } 62.11%, 100% { opacity: 1 } }
+.b10 { animation: b10 19.0s linear infinite }
+@keyframes b11 { 0%, 65.78% { opacity: 0 } 65.79%, 100% { opacity: 1 } }
+.b11 { animation: b11 19.0s linear infinite }
+</style>
+<rect width="720" height="680" rx="8" fill="#0d1117"/>
+<path d="M0 8a8 8 0 0 1 8-8h704a8 8 0 0 1 8 8v22H0z" fill="#161b22"/>
+<circle cx="18" cy="15" r="6" fill="#ff5f56"/><circle cx="38" cy="15" r="6" fill="#ffbd2e"/><circle cx="58" cy="15" r="6" fill="#27c93f"/>
+<text x="360" y="20" text-anchor="middle" fill="#8b949e">codecleanup</text>
+<g class="b0">
+<text x="18" y="58" xml:space="preserve"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">cat main.rs</tspan></text>
+</g>
+<g class="b1">
+<text x="18" y="77" xml:space="preserve"><tspan fill="#c9d1d9">fn main() {</tspan></text>
+<text x="18" y="96" xml:space="preserve"><tspan fill="#c9d1d9">    </tspan><tspan fill="#8b949e">// So we&#x27;re doing something complicated here, long enough</tspan></text>
+<text x="18" y="115" xml:space="preserve"><tspan fill="#c9d1d9">    </tspan><tspan fill="#8b949e">// that we need multiple lines of comments to do it!</tspan></text>
+<text x="18" y="134" xml:space="preserve"><tspan fill="#c9d1d9">    let lucky_number = 7; </tspan><tspan fill="#8b949e">// I&#x27;m feeling lucky today</tspan></text>
+<text x="18" y="153" xml:space="preserve"><tspan fill="#c9d1d9">}</tspan></text>
+</g>
+<g class="b2">
+<text x="18" y="172" xml:space="preserve"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">codecleanup --in=main.rs --docs=docs/</tspan></text>
+</g>
+<g class="b3">
+<text x="18" y="191" xml:space="preserve"><tspan fill="#c9d1d9">processed 1 file, with 2 refids</tspan></text>
+<text x="18" y="210" xml:space="preserve"><tspan fill="#c9d1d9">indexed 2 refids</tspan></text>
+<text x="18" y="229" xml:space="preserve"><tspan fill="#c9d1d9">run time: 251 µs</tspan></text>
+</g>
+<g class="b4">
+<text x="18" y="248" xml:space="preserve"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">cat main.rs</tspan></text>
+</g>
+<g class="b5">
+<text x="18" y="267" xml:space="preserve"><tspan fill="#c9d1d9">fn main() {</tspan></text>
+<text x="18" y="286" xml:space="preserve"><tspan fill="#c9d1d9">    </tspan><tspan fill="#e3b341">// refid: 1</tspan></text>
+<text x="18" y="305" xml:space="preserve"><tspan fill="#c9d1d9">    let lucky_number = 7; </tspan><tspan fill="#e3b341">// refid: 2</tspan></text>
+<text x="18" y="324" xml:space="preserve"><tspan fill="#c9d1d9">}</tspan></text>
+</g>
+<g class="b6">
+<text x="18" y="343" xml:space="preserve"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">head -n 6 docs/main.md</tspan></text>
+</g>
+<g class="b7">
+<text x="18" y="362" xml:space="preserve"><tspan fill="#58a6ff">## refid: 1</tspan></text>
+<text x="18" y="381" xml:space="preserve"><tspan fill="#c9d1d9"></tspan></text>
+<text x="18" y="400" xml:space="preserve"><tspan fill="#c9d1d9">```text</tspan></text>
+<text x="18" y="419" xml:space="preserve"><tspan fill="#c9d1d9"></tspan><tspan fill="#8b949e">// So we&#x27;re doing something complicated here, long enough</tspan></text>
+<text x="18" y="438" xml:space="preserve"><tspan fill="#c9d1d9">    </tspan><tspan fill="#8b949e">// that we need multiple lines of comments to do it!</tspan></text>
+<text x="18" y="457" xml:space="preserve"><tspan fill="#c9d1d9">```</tspan></text>
+</g>
+<g class="b8">
+<text x="18" y="476" xml:space="preserve"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">codecleanup --in=main.rs --docs=docs/ --restore</tspan></text>
+</g>
+<g class="b9">
+<text x="18" y="495" xml:space="preserve"><tspan fill="#c9d1d9">processed 1 file, with 2 refids</tspan></text>
+<text x="18" y="514" xml:space="preserve"><tspan fill="#c9d1d9">restored 2 refids</tspan></text>
+<text x="18" y="533" xml:space="preserve"><tspan fill="#c9d1d9">run time: 180 µs</tspan></text>
+</g>
+<g class="b10">
+<text x="18" y="552" xml:space="preserve"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">cat main.rs</tspan></text>
+</g>
+<g class="b11">
+<text x="18" y="571" xml:space="preserve"><tspan fill="#c9d1d9">fn main() {</tspan></text>
+<text x="18" y="590" xml:space="preserve"><tspan fill="#c9d1d9">    </tspan><tspan fill="#8b949e">// So we&#x27;re doing something complicated here, long enough</tspan></text>
+<text x="18" y="609" xml:space="preserve"><tspan fill="#c9d1d9">    </tspan><tspan fill="#8b949e">// that we need multiple lines of comments to do it!</tspan></text>
+<text x="18" y="628" xml:space="preserve"><tspan fill="#c9d1d9">    let lucky_number = 7; </tspan><tspan fill="#8b949e">// I&#x27;m feeling lucky today</tspan></text>
+<text x="18" y="647" xml:space="preserve"><tspan fill="#c9d1d9">}</tspan></text>
+</g>
+</svg>

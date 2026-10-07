@@ -1,0 +1,49 @@
+# Checks every push to main and every pull request.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: test ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Rust toolchain
+        run: |
+          rustup update stable
+          rustup default stable
+      - name: Test
+        run: cargo test --locked
+
+  lint:
+    name: lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Rust toolchain
+        run: |
+          rustup update stable
+          rustup default stable
+          rustup component add rustfmt clippy
+          rustup target add wasm32-unknown-unknown
+      - name: Format
+        run: |
+          cargo fmt --check
+          cargo fmt --check --all --manifest-path plugins/Cargo.toml
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+      # The plugins are a workspace of their own, for another target.
+      - name: Plugins
+        working-directory: plugins
+        run: cargo clippy --locked --release --target wasm32-unknown-unknown -- -D warnings
