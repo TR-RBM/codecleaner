@@ -17,9 +17,9 @@
 use std::collections::HashMap;
 use std::fs::{self, File, OpenOptions};
 use std::io::{BufRead, BufReader, BufWriter, ErrorKind, Read, Seek, Write};
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, ensure};
 
 const INDEX_NAME: &str = "index.tsv";
 
@@ -90,6 +90,16 @@ impl Store {
                 let mut fields = line.split('\t');
                 let id = fields.next().and_then(|id| id.parse::<u64>().ok());
                 if let (Some(id), Some(doc)) = (id, fields.next()) {
+                    // The index is data from disk; a restore must not be
+                    // led to read files that are not docs.
+                    let inside = Path::new(doc)
+                        .components()
+                        .all(|part| matches!(part, Component::Normal(_)));
+                    ensure!(
+                        inside,
+                        "{} names a doc outside of the docs folder: {doc}",
+                        path.display()
+                    );
                     let doc = store.doc_number(doc);
                     store.remember(id, doc);
                 }
@@ -367,6 +377,15 @@ mod tests {
         assert_eq!(store.lookup(41).unwrap().as_deref(), Some("// after"));
         store.begin_file(Path::new("other.md"), Path::new("other.rs"));
         assert_eq!(store.add("# next").unwrap(), 42);
+    }
+
+    #[test]
+    fn rejects_index_entries_outside_of_the_docs() {
+        let dir = tempfile::tempdir().unwrap();
+        for doc in ["../secret.md", "/etc/passwd", "a/../../b.md"] {
+            fs::write(dir.path().join("index.tsv"), format!("1\t{doc}\tmain.rs\n")).unwrap();
+            assert!(Store::open(dir.path()).is_err(), "{doc}");
+        }
     }
 
     #[test]
