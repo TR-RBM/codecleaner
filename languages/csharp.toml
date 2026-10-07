@@ -1,0 +1,32 @@
+name = "C#"
+extensions = ["cs", "csx"]
+line_comments = ["///", "//"]
+
+[[block_comments]]
+open = "/*"
+close = "*/"
+doc_markers = ["*"]
+
+[[strings]]
+open = '"""'
+
+[[strings]]
+open = '@"'
+close = '"'
+
+[[strings]]
+open = '$@"'
+close = '"'
+
+[[strings]]
+open = '@$"'
+close = '"'
+
+[[strings]]
+open = '"'
+escape = '\'
+multiline = false
+
+[[strings]]
+open = "'"
+char = true

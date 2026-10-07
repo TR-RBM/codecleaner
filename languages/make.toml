@@ -1,0 +1,16 @@
+name = "Makefile"
+filenames = ["Makefile", "GNUmakefile", "makefile.inc"]
+extensions = ["mk", "mak"]
+line_comments = ["#"]
+# `#` has other uses in recipes: `$#`, `${#var}`, `a#b`.
+line_comments_need_space = true
+
+# Make has no strings, but recipes hand these to the shell.
+[[strings]]
+open = '"'
+escape = '\'
+multiline = false
+
+[[strings]]
+open = "'"
+multiline = false

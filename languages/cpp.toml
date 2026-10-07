@@ -1,0 +1,23 @@
+name = "C++"
+extensions = ["cpp", "cc", "cxx", "c++", "hpp", "hh", "hxx", "h++", "ipp", "inl"]
+line_comments = ["///", "//!", "//"]
+keep = ["NOLINT", "clang-format", "IWYU pragma"]
+
+[[block_comments]]
+open = "/*"
+close = "*/"
+doc_markers = ["*", "!"]
+
+# Raw strings with a custom delimiter, R"xy(..)xy", are not covered.
+[[strings]]
+open = 'R"('
+close = ')"'
+
+[[strings]]
+open = '"'
+escape = '\'
+multiline = false
+
+[[strings]]
+open = "'"
+char = true

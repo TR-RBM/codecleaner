@@ -1,0 +1,21 @@
+[package]
+name = "codecleanup"
+version = "0.1.0"
+edition = "2024"
+description = "Code Cleanup: replaces source code comments with refids and moves the text into a docs folder"
+exclude = ["plugins/"]
+
+[dependencies]
+aho-corasick = "1.1.5"
+anyhow = "1.0.104"
+clap = { version = "4", features = ["derive"] }
+ignore = "0.4.33"
+memchr = "2.8.3"
+serde = { version = "1.0.229", features = ["derive"] }
+tempfile = "3.27.0"
+toml = "1.1.6"
+wasmi = { version = "2.0.0", default-features = false, features = ["stable", "std", "validate", "auto-dispatch"] }
+
+[profile.release]
+lto = true
+codegen-units = 1

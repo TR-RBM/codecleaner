@@ -1,0 +1,16 @@
+# Build output
+/target/
+/plugins/target/
+
+# Release archives
+/dist/
+
+# Temporary files the tool writes next to a source file while replacing it
+.codecleanup-*
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store

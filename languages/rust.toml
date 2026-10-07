@@ -1,0 +1,25 @@
+name = "Rust"
+extensions = ["rs"]
+# `////` and longer is a plain comment in Rust, not a doc comment, so it
+# must not be rewritten to `///`.
+line_comments = ["////", "///", "//!", "//"]
+
+[[block_comments]]
+open = "/*"
+close = "*/"
+nested = true
+doc_markers = ["*", "!"]
+
+[[strings]]
+open = '"'
+escape = '\'
+
+# Raw strings: r"..", r#".."#, r##".."## and so on.
+[[strings]]
+open = "r"
+close = '"'
+fence = "#"
+
+[[strings]]
+open = "'"
+char = true

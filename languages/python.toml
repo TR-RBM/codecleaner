@@ -1,0 +1,25 @@
+name = "Python"
+extensions = ["py", "pyi", "pyw"]
+line_comments = ["#"]
+keep = [
+    "type:", "noqa", "pylint:", "pragma:", "mypy:", "ruff:", "isort:", "fmt:",
+    "-*-", "coding:", "coding=", "vim:",
+]
+
+[[strings]]
+open = '"""'
+escape = '\'
+
+[[strings]]
+open = "'''"
+escape = '\'
+
+[[strings]]
+open = '"'
+escape = '\'
+multiline = false
+
+[[strings]]
+open = "'"
+escape = '\'
+multiline = false

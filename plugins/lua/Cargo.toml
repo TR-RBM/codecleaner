@@ -1,0 +1,11 @@
+[package]
+name = "codecleanup-lua"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+codecleanup-plugin = { path = "../sdk" }

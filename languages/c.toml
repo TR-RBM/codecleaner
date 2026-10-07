@@ -1,0 +1,20 @@
+name = "C"
+# `.rc` is a Windows resource script and `.inc` a generic include file;
+# both use C comments. `makefile.inc` is matched by name as a Makefile.
+extensions = ["c", "h", "rc", "inc"]
+line_comments = ["///", "//!", "//"]
+keep = ["NOLINT", "clang-format", "IWYU pragma"]
+
+[[block_comments]]
+open = "/*"
+close = "*/"
+doc_markers = ["*", "!"]
+
+[[strings]]
+open = '"'
+escape = '\'
+multiline = false
+
+[[strings]]
+open = "'"
+char = true
