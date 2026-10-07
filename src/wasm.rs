@@ -148,9 +148,9 @@ impl Lexer for WasmLexer {
             .data(&self.store)
             .get(ptr..ptr.saturating_add(count.saturating_mul(8)))
             .context("the plugin returned segments outside of its memory")?;
-        for pair in table.chunks_exact(8) {
-            let kind = u32::from_le_bytes([pair[0], pair[1], pair[2], pair[3]]);
-            let len = u32::from_le_bytes([pair[4], pair[5], pair[6], pair[7]]);
+        for &[k0, k1, k2, k3, l0, l1, l2, l3] in table.as_chunks::<8>().0 {
+            let kind = u32::from_le_bytes([k0, k1, k2, k3]);
+            let len = u32::from_le_bytes([l0, l1, l2, l3]);
             let kind =
                 Kind::from_u32(kind).context("the plugin returned an unknown segment kind")?;
             out.push(Segment {

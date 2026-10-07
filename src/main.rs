@@ -190,8 +190,7 @@ fn run(cli: Cli) -> Result<ExitCode> {
 
 /// Shells do not expand `~` after `--in=`, so it is done here.
 fn expand_tilde(path: &Path) -> PathBuf {
-    let home = env::var_os("HOME").map(PathBuf::from);
-    match (path.strip_prefix("~"), home) {
+    match (path.strip_prefix("~"), env::home_dir()) {
         (Ok(rest), Some(home)) => home.join(rest),
         _ => path.to_path_buf(),
     }
@@ -201,7 +200,7 @@ fn config_dir() -> Option<PathBuf> {
     let xdg = env::var_os("XDG_CONFIG_HOME")
         .filter(|dir| !dir.is_empty())
         .map(PathBuf::from);
-    xdg.or_else(|| Some(PathBuf::from(env::var_os("HOME")?).join(".config")))
+    xdg.or_else(|| Some(env::home_dir()?.join(".config")))
 }
 
 /// A number with its noun, in singular or plural: `1 file`, `2 files`.
@@ -255,7 +254,7 @@ mod tests {
 
     #[test]
     fn expands_tilde() {
-        let home = PathBuf::from(env::var_os("HOME").unwrap());
+        let home = env::home_dir().unwrap();
         assert_eq!(expand_tilde(Path::new("~/docs")), home.join("docs"));
         assert_eq!(expand_tilde(Path::new("./docs")), PathBuf::from("./docs"));
         assert_eq!(
