@@ -144,8 +144,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "the installed program does not run" }
           $path = [Environment]::GetEnvironmentVariable('Path', 'User')
           if ($path -notlike '*\Programs\codecleanup*') { throw "not on the user PATH: $path" }
-          $listed = Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object DisplayName -eq 'Code Cleanup'
-          if (-not $listed) { throw "not listed under installed apps" }
+          # Ask Windows Installer itself: an MSI product is not listed in the
+          # registry key that other installers use.
+          $installer = New-Object -ComObject WindowsInstaller.Installer
+          $product = $installer.Products | Where-Object { $installer.ProductInfo($_, 'ProductName') -eq 'Code Cleanup' }
+          if (-not $product) { throw "not listed under installed apps" }
+          $scope = $installer.ProductInfo($product, 'AssignmentType')
+          if ($scope -ne '0') { throw "installed for all users instead of the current one (AssignmentType $scope)" }
           $remove = Start-Process msiexec -ArgumentList "/x `"$msi`" /qn" -Wait -PassThru
           if ($remove.ExitCode -ne 0) { throw "uninstall failed: $($remove.ExitCode)" }
           if (Test-Path $exe) { throw "the program is still there after the uninstall" }
