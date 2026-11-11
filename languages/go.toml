@@ -1,0 +1,23 @@
+name = "Go"
+extensions = ["go"]
+line_comments = ["//"]
+# Directives look like comments but steer the compiler, cgo and linters.
+keep = ["go:", "+build", "line ", "export ", "extern ", "#cgo", "#include", "nolint", "#nosec", "lint:"]
+
+[[block_comments]]
+open = "/*"
+close = "*/"
+
+[[strings]]
+open = '"'
+escape = '\'
+multiline = false
+
+# Raw strings have no escapes and may span lines.
+[[strings]]
+open = "`"
+
+[[strings]]
+open = "'"
+escape = '\'
+char = true

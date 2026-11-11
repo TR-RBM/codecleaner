@@ -19,6 +19,7 @@ const BUILTIN_RULES: &[(&str, &str)] = &[
     ("c.toml", include_str!("../languages/c.toml")),
     ("cpp.toml", include_str!("../languages/cpp.toml")),
     ("csharp.toml", include_str!("../languages/csharp.toml")),
+    ("go.toml", include_str!("../languages/go.toml")),
     ("make.toml", include_str!("../languages/make.toml")),
     ("python.toml", include_str!("../languages/python.toml")),
     ("rust.toml", include_str!("../languages/rust.toml")),
@@ -217,6 +218,12 @@ mod tests {
             texts("a.cs", src),
             [" one", " two ", " <summary>doc</summary>"]
         );
+    }
+
+    #[test]
+    fn go() {
+        let src = "//go:build linux\n\npackage a\n\n//go:embed x.txt\nvar x string // one\n\n// two\nfunc f() string {\n\treturn \"// no\" + `/* no\n// no */` + string('\"') /* three */\n}\n//nolint:errcheck\n//export F\n";
+        assert_eq!(texts("a.go", src), [" one", " two", " three "]);
     }
 
     #[test]

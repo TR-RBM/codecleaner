@@ -139,6 +139,7 @@ by a restore.
 | C          | `.c` `.h` `.rc` `.inc`                                   | TOML   |
 | C++        | `.cpp` `.cc` `.cxx` `.c++` `.hpp` `.hh` `.hxx` `.h++` `.ipp` `.inl` | TOML |
 | C#         | `.cs` `.csx`                                             | TOML   |
+| Go         | `.go`                                                    | TOML   |
 | Python     | `.py` `.pyi` `.pyw`                                      | TOML   |
 | Makefile   | `Makefile` `GNUmakefile` `makefile.inc` `.mk` `.mak`     | TOML   |
 | TypeScript | `.ts` `.mts` `.cts`                                      | WASM   |
